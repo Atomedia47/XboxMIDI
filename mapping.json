@@ -1,0 +1,29 @@
+{
+  "channel": 1,
+  "velocity": 127,
+  "deadzone": 0.08,
+  "buttons": {
+    "a": 36,
+    "b": 37,
+    "x": 38,
+    "y": 39,
+    "dpadUp": 40,
+    "dpadDown": 41,
+    "dpadLeft": 42,
+    "dpadRight": 43,
+    "leftShoulder": 44,
+    "rightShoulder": 45,
+    "leftStickButton": 46,
+    "rightStickButton": 47,
+    "menu": 48,
+    "options": 49
+  },
+  "axes": {
+    "leftTrigger": 1,
+    "rightTrigger": 2,
+    "leftStickX": 3,
+    "leftStickY": 4,
+    "rightStickX": 5,
+    "rightStickY": 6
+  }
+}

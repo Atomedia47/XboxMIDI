@@ -1,0 +1,5 @@
+# Build output — produced on the Mac by build.command
+XboxMIDI.app/
+
+# macOS cruft
+.DS_Store
