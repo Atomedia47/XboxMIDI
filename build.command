@@ -24,6 +24,7 @@ cp Info.plist "$APP/Contents/Info.plist"
 
 swiftc -O Sources/main.swift \
   -framework Cocoa -framework GameController -framework CoreMIDI \
+  -framework ApplicationServices \
   -o "$APP/Contents/MacOS/XboxMIDI"
 
 if [ $? -ne 0 ]; then
