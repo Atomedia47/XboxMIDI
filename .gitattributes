@@ -1,0 +1,7 @@
+# Force Unix (LF) line endings on files that run on macOS.
+# CRLF in a shell script causes "bad interpreter: /bin/bash^M" on Mac.
+*.command text eol=lf
+*.sh      text eol=lf
+*.swift   text eol=lf
+mapping.json text eol=lf
+Info.plist   text eol=lf
