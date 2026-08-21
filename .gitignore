@@ -3,3 +3,9 @@ XboxMIDI.app/
 
 # macOS cruft
 .DS_Store
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env

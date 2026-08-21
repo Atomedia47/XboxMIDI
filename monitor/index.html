@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Multi-Bot Monitor</title>
+<style>
+:root {
+  --bg: #0a0a0f;
+  --surface: #12121a;
+  --surface2: #1a1a25;
+  --border: #2a2a3a;
+  --text: #e0e0e8;
+  --text2: #8888a0;
+  --accent: #6366f1;
+  --accent2: #818cf8;
+  --green: #22c55e;
+  --red: #ef4444;
+  --yellow: #eab308;
+  --orange: #f97316;
+  --cyan: #06b6d4;
+  --pink: #ec4899;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--bg);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { padding: 8px; min-height: 100vh; background: var(--bg); }
+
+.header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; background: var(--surface); border-radius: 12px;
+  margin-bottom: 8px; border: 1px solid var(--border);
+}
+.header h1 { font-size: 16px; font-weight: 700; }
+.header .status-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--green); display: inline-block;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.tabs {
+  display: flex; gap: 4px; margin-bottom: 8px;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+}
+.tab {
+  padding: 8px 14px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text2); cursor: pointer;
+  font-size: 12px; font-weight: 600; white-space: nowrap;
+  transition: all 0.2s;
+}
+.tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+.panel { display: none; }
+.panel.active { display: block; }
+
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px; margin-bottom: 8px;
+}
+.card-title {
+  font-size: 13px; font-weight: 700; color: var(--accent2);
+  margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+.agent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+@media (max-width: 400px) { .agent-grid { grid-template-columns: 1fr; } }
+
+.agent-card {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px; cursor: pointer;
+  transition: border-color 0.2s;
+}
+.agent-card:active { border-color: var(--accent); }
+.agent-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.agent-role { font-size: 11px; color: var(--text2); margin-bottom: 8px; }
+.agent-stat {
+  display: flex; justify-content: space-between; font-size: 11px;
+  padding: 2px 0; color: var(--text2);
+}
+.agent-stat .val { color: var(--text); font-weight: 600; }
+.agent-active { color: var(--green); }
+.agent-inactive { color: var(--red); }
+
+.chain-item {
+  background: var(--surface2); border-radius: 8px; padding: 10px;
+  margin-bottom: 6px; border-left: 3px solid var(--accent);
+}
+.chain-item.completed { border-left-color: var(--green); }
+.chain-item.stopped { border-left-color: var(--red); }
+.chain-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
+.chain-id { font-size: 12px; font-weight: 700; }
+.chain-status { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px; }
+.chain-status.active { background: rgba(99,102,241,0.2); color: var(--accent2); }
+.chain-status.completed { background: rgba(34,197,94,0.2); color: var(--green); }
+.chain-status.stopped { background: rgba(239,68,68,0.2); color: var(--red); }
+.chain-meta { font-size: 11px; color: var(--text2); }
+
+.event-item {
+  padding: 6px 0; border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.event-type { font-weight: 700; color: var(--cyan); }
+.event-time { color: var(--text2); font-size: 11px; }
+
+.control-group { margin-bottom: 12px; }
+.control-group label { display: block; font-size: 12px; color: var(--text2); margin-bottom: 4px; }
+.control-group select, .control-group input, .control-group textarea {
+  width: 100%; padding: 10px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--surface2);
+  color: var(--text); font-size: 14px; font-family: inherit;
+}
+.control-group textarea { min-height: 80px; resize: vertical; }
+.btn {
+  padding: 10px 20px; border-radius: 8px; border: none;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  transition: opacity 0.2s; width: 100%; margin-top: 8px;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+.btn:active { opacity: 0.7; }
+
+.msg-bubble {
+  padding: 10px 12px; border-radius: 10px; margin-bottom: 6px;
+  font-size: 13px; line-height: 1.4; max-height: 150px;
+  overflow-y: auto;
+}
+.msg-sent { background: rgba(99,102,241,0.15); border-left: 3px solid var(--accent); }
+.msg-received { background: rgba(34,197,94,0.1); border-left: 3px solid var(--green); }
+.msg-from { font-size: 11px; font-weight: 700; color: var(--text2); margin-bottom: 4px; }
+
+.stats-row {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;
+}
+.stat-box {
+  flex: 1; min-width: 80px; background: var(--surface2);
+  border-radius: 8px; padding: 10px; text-align: center;
+}
+.stat-val { font-size: 20px; font-weight: 800; color: var(--accent2); }
+.stat-label { font-size: 10px; color: var(--text2); text-transform: uppercase; }
+
+.learning-item {
+  padding: 8px; background: rgba(234,179,8,0.1); border-radius: 8px;
+  margin-bottom: 6px; border-left: 3px solid var(--yellow);
+  font-size: 12px;
+}
+.learning-source { font-weight: 700; color: var(--yellow); }
+
+.refresh-bar {
+  display: flex; align-items: center; gap: 8px; padding: 8px;
+  font-size: 11px; color: var(--text2);
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>Multi-Bot Monitor</h1>
+    <div style="font-size:11px;color:var(--text2)">Recursive Learning System</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <span class="status-dot" id="statusDot"></span>
+    <span style="font-size:12px" id="statusText">Connecting...</span>
+  </div>
+</div>
+
+<div class="tabs" id="tabs">
+  <div class="tab active" data-panel="overview">Overview</div>
+  <div class="tab" data-panel="agents">Agents</div>
+  <div class="tab" data-panel="chains">Chains</div>
+  <div class="tab" data-panel="control">Control</div>
+  <div class="tab" data-panel="events">Events</div>
+</div>
+
+<!-- Overview Panel -->
+<div class="panel active" id="panel-overview">
+  <div class="stats-row" id="overviewStats"></div>
+  <div class="card">
+    <div class="card-title">Agent Status</div>
+    <div class="agent-grid" id="agentGrid"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Recent Activity</div>
+    <div id="recentActivity"></div>
+  </div>
+</div>
+
+<!-- Agents Panel -->
+<div class="panel" id="panel-agents">
+  <div id="agentDetail"></div>
+</div>
+
+<!-- Chains Panel -->
+<div class="panel" id="panel-chains">
+  <div class="card">
+    <div class="card-title">Conversation Chains</div>
+    <div id="chainList"></div>
+  </div>
+</div>
+
+<!-- Control Panel -->
+<div class="panel" id="panel-control">
+  <div class="card">
+    <div class="card-title">Send Message</div>
+    <div class="control-group">
+      <label>To Agent</label>
+      <select id="msgRecipient"></select>
+    </div>
+    <div class="control-group">
+      <label>Message</label>
+      <textarea id="msgContent" placeholder="Type your message..."></textarea>
+    </div>
+    <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Start Recursive Chain</div>
+    <div class="control-group">
+      <label>Starting Agent</label>
+      <select id="chainRecipient"></select>
+    </div>
+    <div class="control-group">
+      <label>Prompt</label>
+      <textarea id="chainPrompt" placeholder="Enter the seed prompt..."></textarea>
+    </div>
+    <div class="control-group">
+      <label>Max Depth</label>
+      <input type="number" id="chainDepth" value="10" min="1" max="50">
+    </div>
+    <button class="btn btn-primary" onclick="startChain()">Start Chain</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Multi-Agent Discussion</div>
+    <div class="control-group">
+      <label>Participants (select multiple)</label>
+      <select id="discParticipants" multiple size="4"></select>
+    </div>
+    <div class="control-group">
+      <label>Topic</label>
+      <textarea id="discTopic" placeholder="Discussion topic..."></textarea>
+    </div>
+    <div class="control-group">
+      <label>Rounds</label>
+      <input type="number" id="discRounds" value="5" min="1" max="20">
+    </div>
+    <button class="btn btn-primary" onclick="startDiscussion()">Start Discussion</button>
+  </div>
+</div>
+
+<!-- Events Panel -->
+<div class="panel" id="panel-events">
+  <div class="card">
+    <div class="card-title">Event Log</div>
+    <div id="eventLog"></div>
+  </div>
+</div>
+
+<div class="refresh-bar">
+  <span>Auto-refresh: 3s</span>
+  <span id="lastUpdate"></span>
+</div>
+
+<script>
+const API = window.location.origin;
+let currentPanel = 'overview';
+let agentNames = [];
+
+// Tab switching
+document.getElementById('tabs').addEventListener('click', (e) => {
+  const tab = e.target.closest('.tab');
+  if (!tab) return;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  tab.classList.add('active');
+  const panel = tab.dataset.panel;
+  document.getElementById('panel-' + panel).classList.add('active');
+  currentPanel = panel;
+  refresh();
+});
+
+async function api(path, opts) {
+  try {
+    const resp = await fetch(API + path, opts);
+    return await resp.json();
+  } catch (e) {
+    document.getElementById('statusDot').style.background = 'var(--red)';
+    document.getElementById('statusText').textContent = 'Disconnected';
+    return null;
+  }
+}
+
+function timeAgo(ts) {
+  const s = Math.floor(Date.now()/1000 - ts);
+  if (s < 60) return s + 's ago';
+  if (s < 3600) return Math.floor(s/60) + 'm ago';
+  return Math.floor(s/3600) + 'h ago';
+}
+
+const roleColors = {
+  coordinator: 'var(--cyan)',
+  strategic_analyst: 'var(--accent2)',
+  executor: 'var(--green)',
+  problem_solver: 'var(--orange)',
+  technical_specialist: 'var(--pink)',
+  monitor_reporter: 'var(--yellow)',
+};
+
+async function refreshOverview() {
+  const status = await api('/api/status');
+  if (!status) return;
+
+  document.getElementById('statusDot').style.background = 'var(--green)';
+  document.getElementById('statusText').textContent = 'Connected';
+
+  const agents = status.agents || {};
+  agentNames = Object.keys(agents);
+  let totalMsgs = 0, totalTokens = 0, totalLearnings = 0;
+  for (const a of Object.values(agents)) {
+    totalMsgs += (a.stats?.messages_sent || 0) + (a.stats?.messages_received || 0);
+    totalTokens += (a.stats?.tokens_in_total || 0) + (a.stats?.tokens_out_total || 0);
+    totalLearnings += a.learnings_count || 0;
+  }
+
+  document.getElementById('overviewStats').innerHTML = `
+    <div class="stat-box"><div class="stat-val">${agentNames.length}</div><div class="stat-label">Agents</div></div>
+    <div class="stat-box"><div class="stat-val">${totalMsgs}</div><div class="stat-label">Messages</div></div>
+    <div class="stat-box"><div class="stat-val">${totalTokens}</div><div class="stat-label">Tokens</div></div>
+    <div class="stat-box"><div class="stat-val">${totalLearnings}</div><div class="stat-label">Learnings</div></div>
+    <div class="stat-box"><div class="stat-val">${status.completed_chains||0}</div><div class="stat-label">Chains</div></div>
+  `;
+
+  let gridHtml = '';
+  for (const [name, a] of Object.entries(agents)) {
+    const color = roleColors[a.role] || 'var(--text)';
+    gridHtml += `
+      <div class="agent-card" onclick="showAgent('${name}')">
+        <div class="agent-name" style="color:${color}">${a.name}</div>
+        <div class="agent-role">${a.role.replace(/_/g,' ')}</div>
+        <div class="agent-stat"><span>Messages</span><span class="val">${(a.stats?.messages_sent||0)+(a.stats?.messages_received||0)}</span></div>
+        <div class="agent-stat"><span>Learnings</span><span class="val">${a.learnings_count||0}</span></div>
+        <div class="agent-stat"><span>Status</span><span class="${a.active?'agent-active':'agent-inactive'}">${a.active?'Active':'Stopped'}</span></div>
+      </div>`;
+  }
+  document.getElementById('agentGrid').innerHTML = gridHtml;
+
+  const events = (status.recent_events || []).slice(-8).reverse();
+  let evHtml = '';
+  for (const ev of events) {
+    evHtml += `<div class="event-item">
+      <span class="event-type">${ev.type}</span>
+      <span class="event-time">${timeAgo(ev.timestamp)}</span>
+      <div style="color:var(--text2);font-size:11px">${JSON.stringify(ev.data).substring(0,120)}</div>
+    </div>`;
+  }
+  document.getElementById('recentActivity').innerHTML = evHtml || '<div style="color:var(--text2);font-size:12px">No activity yet</div>';
+
+  // Update control selects
+  updateSelects();
+}
+
+function updateSelects() {
+  for (const id of ['msgRecipient', 'chainRecipient']) {
+    const sel = document.getElementById(id);
+    const cur = sel.value;
+    sel.innerHTML = agentNames.map(n => `<option value="${n}" ${n===cur?'selected':''}>${n}</option>`).join('');
+  }
+  const multi = document.getElementById('discParticipants');
+  const selected = Array.from(multi.selectedOptions).map(o => o.value);
+  multi.innerHTML = agentNames.map(n =>
+    `<option value="${n}" ${selected.includes(n)?'selected':''}>${n}</option>`
+  ).join('');
+}
+
+async function showAgent(name) {
+  const data = await api('/api/agent/' + encodeURIComponent(name));
+  if (!data) return;
+
+  // Switch to agents tab
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab')[1].classList.add('active');
+  document.getElementById('panel-agents').classList.add('active');
+  currentPanel = 'agents';
+
+  const color = roleColors[data.role] || 'var(--text)';
+  let html = `
+    <div class="card">
+      <div class="card-title" style="color:${color}">${data.name}</div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:12px">${data.role.replace(/_/g,' ')} | ${data.model} (${data.backend})</div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-val">${data.stats?.messages_sent||0}</div><div class="stat-label">Sent</div></div>
+        <div class="stat-box"><div class="stat-val">${data.stats?.messages_received||0}</div><div class="stat-label">Received</div></div>
+        <div class="stat-box"><div class="stat-val">${data.stats?.tokens_out_total||0}</div><div class="stat-label">Tokens Out</div></div>
+        <div class="stat-box"><div class="stat-val">${data.learnings_count||0}</div><div class="stat-label">Learnings</div></div>
+      </div>
+    </div>`;
+
+  if (data.learnings && data.learnings.length) {
+    html += `<div class="card"><div class="card-title">Learnings</div>`;
+    for (const l of data.learnings.slice(-10).reverse()) {
+      html += `<div class="learning-item">
+        <span class="learning-source">${l.source_agent}</span>
+        <span style="color:var(--text2)"> (${(l.confidence*100).toFixed(0)}%)</span>
+        <div style="margin-top:4px">${l.insight.substring(0,200)}</div>
+      </div>`;
+    }
+    html += `</div>`;
+  }
+
+  if (data.recent_messages && data.recent_messages.length) {
+    html += `<div class="card"><div class="card-title">Recent Messages</div>`;
+    for (const m of data.recent_messages.slice(-10).reverse()) {
+      const isSent = m.sender === name;
+      html += `<div class="msg-bubble ${isSent?'msg-sent':'msg-received'}">
+        <div class="msg-from">${m.sender} → ${m.recipient} ${timeAgo(m.timestamp)}</div>
+        ${m.content.substring(0,300)}${m.content.length>300?'...':''}
+      </div>`;
+    }
+    html += `</div>`;
+  }
+
+  html += `<button class="btn btn-secondary" onclick="refreshOverview();document.querySelectorAll('.tab')[0].click();">← Back</button>`;
+  document.getElementById('agentDetail').innerHTML = html;
+}
+
+async function refreshChains() {
+  const chains = await api('/api/chains?limit=20');
+  if (!chains) return;
+  let html = '';
+  for (const c of chains.reverse()) {
+    html += `<div class="chain-item ${c.status}">
+      <div class="chain-header">
+        <span class="chain-id">${c.id}</span>
+        <span class="chain-status ${c.status}">${c.status}</span>
+      </div>
+      <div class="chain-meta">
+        Depth: ${c.depth} | Agents: ${c.agents.join(', ')} | Msgs: ${c.messages} | Learnings: ${c.learnings}
+      </div>
+    </div>`;
+  }
+  document.getElementById('chainList').innerHTML = html || '<div style="color:var(--text2);font-size:12px">No chains yet</div>';
+}
+
+async function refreshEvents() {
+  const events = await api('/api/events?limit=50');
+  if (!events) return;
+  let html = '';
+  for (const ev of events.reverse()) {
+    html += `<div class="event-item">
+      <span class="event-type">${ev.type}</span>
+      <span class="event-time">${timeAgo(ev.timestamp)}</span>
+      <div style="color:var(--text2);font-size:11px;margin-top:2px">${JSON.stringify(ev.data).substring(0,200)}</div>
+    </div>`;
+  }
+  document.getElementById('eventLog').innerHTML = html || '<div style="color:var(--text2);font-size:12px">No events yet</div>';
+}
+
+async function sendMessage() {
+  const recipient = document.getElementById('msgRecipient').value;
+  const content = document.getElementById('msgContent').value;
+  if (!content) return;
+  const result = await api('/api/message', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({sender: 'user', recipient, content}),
+  });
+  if (result && !result.error) {
+    document.getElementById('msgContent').value = '';
+    refresh();
+  }
+}
+
+async function startChain() {
+  const recipient = document.getElementById('chainRecipient').value;
+  const prompt = document.getElementById('chainPrompt').value;
+  const maxDepth = parseInt(document.getElementById('chainDepth').value);
+  if (!prompt) return;
+  await api('/api/recursive', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({sender: 'user', recipient, prompt, max_depth: maxDepth}),
+  });
+  document.getElementById('chainPrompt').value = '';
+  refresh();
+}
+
+async function startDiscussion() {
+  const sel = document.getElementById('discParticipants');
+  const participants = Array.from(sel.selectedOptions).map(o => o.value);
+  const topic = document.getElementById('discTopic').value;
+  const rounds = parseInt(document.getElementById('discRounds').value);
+  if (!participants.length || !topic) return;
+  await api('/api/discussion', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({participants, topic, rounds}),
+  });
+  document.getElementById('discTopic').value = '';
+  refresh();
+}
+
+async function refresh() {
+  if (currentPanel === 'overview' || currentPanel === 'agents') await refreshOverview();
+  if (currentPanel === 'chains') await refreshChains();
+  if (currentPanel === 'events') await refreshEvents();
+  document.getElementById('lastUpdate').textContent = 'Updated: ' + new Date().toLocaleTimeString();
+}
+
+refresh();
+setInterval(refresh, 3000);
+</script>
+</body>
+</html>
