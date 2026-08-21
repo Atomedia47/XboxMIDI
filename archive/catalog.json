@@ -1,0 +1,413 @@
+{
+  "drive": {
+    "mount_point": "/mnt/wd-black-8tb",
+    "label": "WD Black 8TB Knowledge Archive",
+    "base_dir": "/mnt/wd-black-8tb/knowledge-archive"
+  },
+  "categories": {
+    "wikipedia": {
+      "dir": "01-wikipedia",
+      "description": "Full offline Wikipedia and sister projects via Kiwix ZIM files",
+      "sources": [
+        {
+          "name": "Wikipedia (English, full)",
+          "url": "https://download.kiwix.org/zim/wikipedia/wikipedia_en_all_maxi_2024-01.zim",
+          "size_gb": 97,
+          "format": "zim",
+          "viewer": "kiwix-serve",
+          "priority": 1
+        },
+        {
+          "name": "Wikipedia (English, no images)",
+          "url": "https://download.kiwix.org/zim/wikipedia/wikipedia_en_all_nopic_2024-01.zim",
+          "size_gb": 24,
+          "format": "zim",
+          "viewer": "kiwix-serve",
+          "priority": 2,
+          "note": "Lighter fallback if space is tight"
+        },
+        {
+          "name": "Wiktionary (English)",
+          "url": "https://download.kiwix.org/zim/wiktionary/wiktionary_en_all_maxi_2024-01.zim",
+          "size_gb": 6,
+          "format": "zim",
+          "priority": 3
+        },
+        {
+          "name": "WikiHow",
+          "url": "https://download.kiwix.org/zim/other/wikihow_en_maxi_2024-01.zim",
+          "size_gb": 4,
+          "format": "zim",
+          "priority": 2
+        },
+        {
+          "name": "Stack Exchange (all sites)",
+          "url": "https://download.kiwix.org/zim/stack_exchange/",
+          "size_gb": 90,
+          "format": "zim",
+          "priority": 3,
+          "note": "Download individual site ZIMs as needed"
+        }
+      ]
+    },
+    "survival": {
+      "dir": "02-survival",
+      "description": "Survival, self-sufficiency, emergency preparedness, medical",
+      "sources": [
+        {
+          "name": "US Army Survival Manual FM 21-76",
+          "type": "manual",
+          "priority": 1,
+          "tags": ["military", "wilderness", "core"]
+        },
+        {
+          "name": "SAS Survival Handbook (digital)",
+          "type": "book",
+          "priority": 1,
+          "tags": ["wilderness", "core"]
+        },
+        {
+          "name": "Where There Is No Doctor",
+          "type": "book",
+          "url": "https://hesperian.org/books-and-resources/",
+          "priority": 1,
+          "tags": ["medical", "critical"]
+        },
+        {
+          "name": "Where There Is No Dentist",
+          "type": "book",
+          "url": "https://hesperian.org/books-and-resources/",
+          "priority": 1,
+          "tags": ["medical", "critical"]
+        },
+        {
+          "name": "Permaculture Design Manual",
+          "type": "book",
+          "priority": 1,
+          "tags": ["agriculture", "food"]
+        },
+        {
+          "name": "Foxfire Book Series (1-12)",
+          "type": "book_series",
+          "priority": 2,
+          "tags": ["traditional_skills", "self_sufficiency"]
+        },
+        {
+          "name": "FEMA Emergency Preparedness Guides",
+          "type": "collection",
+          "url": "https://www.fema.gov/emergency-managers/risk-management/publications",
+          "priority": 2,
+          "tags": ["emergency", "disaster"]
+        },
+        {
+          "name": "Seed saving and food preservation guides",
+          "type": "collection",
+          "priority": 2,
+          "tags": ["agriculture", "food", "long_term"]
+        },
+        {
+          "name": "Water purification and well drilling manuals",
+          "type": "collection",
+          "priority": 1,
+          "tags": ["water", "critical"]
+        },
+        {
+          "name": "Off-grid energy systems (solar, wind, micro-hydro)",
+          "type": "collection",
+          "priority": 1,
+          "tags": ["energy", "critical"]
+        },
+        {
+          "name": "Amateur radio ARRL handbook + licensing guides",
+          "type": "collection",
+          "priority": 1,
+          "tags": ["communication", "radio", "critical"]
+        },
+        {
+          "name": "Bushcraft and primitive technology references",
+          "type": "collection",
+          "priority": 2,
+          "tags": ["primitive_skills", "fallback"]
+        }
+      ]
+    },
+    "cyber": {
+      "dir": "03-cyber",
+      "description": "Cybersecurity, ethical hacking, defense, forensics",
+      "sources": [
+        {
+          "name": "Kali Linux Documentation + Tools",
+          "type": "collection",
+          "priority": 1,
+          "tags": ["tools", "pentesting"]
+        },
+        {
+          "name": "OWASP Testing Guide + Cheat Sheets",
+          "url": "https://github.com/OWASP/wstg",
+          "type": "repo",
+          "priority": 1,
+          "tags": ["web_security", "reference"]
+        },
+        {
+          "name": "NIST Cybersecurity Framework + SP 800 series",
+          "url": "https://csrc.nist.gov/publications",
+          "type": "collection",
+          "priority": 1,
+          "tags": ["frameworks", "compliance"]
+        },
+        {
+          "name": "MITRE ATT&CK Framework (offline)",
+          "url": "https://github.com/mitre-attack/attack-stix-data",
+          "type": "repo",
+          "priority": 1,
+          "tags": ["threat_intel", "defense"]
+        },
+        {
+          "name": "Exploit Database Archive",
+          "url": "https://gitlab.com/exploit-database/exploitdb",
+          "type": "repo",
+          "priority": 2,
+          "tags": ["exploits", "reference"]
+        },
+        {
+          "name": "CyberChef (offline)",
+          "url": "https://github.com/gchq/CyberChef",
+          "type": "repo",
+          "priority": 1,
+          "tags": ["tools", "crypto", "encoding"]
+        },
+        {
+          "name": "Metasploit Framework + modules",
+          "type": "collection",
+          "priority": 2,
+          "tags": ["tools", "pentesting"]
+        },
+        {
+          "name": "Wireshark + packet analysis guides",
+          "type": "collection",
+          "priority": 1,
+          "tags": ["network", "forensics"]
+        },
+        {
+          "name": "Cryptography references (Applied Crypto, etc)",
+          "type": "collection",
+          "priority": 2,
+          "tags": ["crypto", "fundamentals"]
+        }
+      ]
+    },
+    "infrastructure": {
+      "dir": "04-infrastructure",
+      "description": "How to rebuild internet, networks, communications from scratch",
+      "sources": [
+        {
+          "name": "RFC Archive (complete IETF RFCs)",
+          "url": "https://www.rfc-editor.org/rfc-index.html",
+          "type": "archive",
+          "size_gb": 2,
+          "priority": 1,
+          "tags": ["protocols", "standards", "critical"]
+        },
+        {
+          "name": "TCP/IP Illustrated (Vols 1-3)",
+          "type": "book_series",
+          "priority": 1,
+          "tags": ["networking", "fundamentals"]
+        },
+        {
+          "name": "BGP/DNS/DHCP configuration guides",
+          "type": "collection",
+          "priority": 1,
+          "tags": ["networking", "rebuild"]
+        },
+        {
+          "name": "Mesh networking guides (Batman-adv, CJDNS, Yggdrasil)",
+          "url": "https://github.com/yggdrasil-network/yggdrasil-go",
+          "type": "collection",
+          "priority": 1,
+          "tags": ["mesh", "decentralized", "critical"]
+        },
+        {
+          "name": "LoRa/LoRaWAN long-range communication",
+          "type": "collection",
+          "priority": 1,
+          "tags": ["radio", "iot", "long_range"]
+        },
+        {
+          "name": "Fiber optic splicing and cable laying manuals",
+          "type": "collection",
+          "priority": 2,
+          "tags": ["physical_layer", "rebuild"]
+        },
+        {
+          "name": "Linux From Scratch (complete build guide)",
+          "url": "https://www.linuxfromscratch.org/lfs/downloads/stable/",
+          "type": "book",
+          "priority": 1,
+          "tags": ["os", "from_scratch"]
+        },
+        {
+          "name": "FreeBSD Handbook + ports tree snapshot",
+          "type": "collection",
+          "priority": 2,
+          "tags": ["os", "server"]
+        },
+        {
+          "name": "DNS root zone + TLD data snapshot",
+          "type": "archive",
+          "priority": 1,
+          "tags": ["dns", "rebuild"]
+        },
+        {
+          "name": "PGP/GPG key infrastructure docs",
+          "type": "collection",
+          "priority": 2,
+          "tags": ["crypto", "identity"]
+        }
+      ]
+    },
+    "technical": {
+      "dir": "05-technical",
+      "description": "Programming, engineering, science, mathematics",
+      "sources": [
+        {
+          "name": "Project Gutenberg (complete mirror)",
+          "url": "https://www.gutenberg.org/robot/harvest",
+          "size_gb": 60,
+          "type": "archive",
+          "priority": 2,
+          "tags": ["books", "literature", "reference"]
+        },
+        {
+          "name": "Khan Academy Lite (Kolibri)",
+          "url": "https://learningequality.org/kolibri/",
+          "type": "application",
+          "priority": 1,
+          "tags": ["education", "math", "science"]
+        },
+        {
+          "name": "OpenStax Textbooks (all subjects)",
+          "url": "https://openstax.org/subjects",
+          "type": "collection",
+          "priority": 1,
+          "tags": ["textbooks", "education"]
+        },
+        {
+          "name": "Electronics and radio repair manuals",
+          "type": "collection",
+          "priority": 1,
+          "tags": ["electronics", "repair"]
+        },
+        {
+          "name": "Machinery's Handbook",
+          "type": "book",
+          "priority": 2,
+          "tags": ["machining", "manufacturing"]
+        },
+        {
+          "name": "Programming language references (Python, C, Rust, Go)",
+          "type": "collection",
+          "priority": 1,
+          "tags": ["programming", "reference"]
+        },
+        {
+          "name": "Git repositories of critical open-source tools",
+          "type": "collection",
+          "priority": 2,
+          "tags": ["source_code", "tools"],
+          "note": "Linux kernel, GCC, Python, Node, etc"
+        }
+      ]
+    },
+    "maps_and_data": {
+      "dir": "06-maps-data",
+      "description": "Offline maps, geographic data, weather patterns",
+      "sources": [
+        {
+          "name": "OpenStreetMap Planet (PBF extract for region)",
+          "url": "https://planet.openstreetmap.org/",
+          "type": "archive",
+          "priority": 1,
+          "tags": ["maps", "navigation"]
+        },
+        {
+          "name": "USGS Topographic Maps (regional)",
+          "type": "collection",
+          "priority": 2,
+          "tags": ["topo", "terrain"]
+        },
+        {
+          "name": "Satellite imagery baseline snapshots",
+          "type": "collection",
+          "priority": 3,
+          "tags": ["imagery", "reference"]
+        }
+      ]
+    },
+    "ai_models": {
+      "dir": "07-ai-models",
+      "description": "Local AI models for offline inference",
+      "sources": [
+        {
+          "name": "Llama 3 (8B, Q4 quantized)",
+          "size_gb": 4.7,
+          "type": "model",
+          "priority": 1,
+          "tags": ["llm", "general"],
+          "note": "Good balance of speed and quality"
+        },
+        {
+          "name": "Llama 3 (70B, Q4 quantized)",
+          "size_gb": 40,
+          "type": "model",
+          "priority": 2,
+          "tags": ["llm", "heavy"],
+          "note": "Full power, needs 48GB+ RAM"
+        },
+        {
+          "name": "Mistral 7B (Q4 quantized)",
+          "size_gb": 4.1,
+          "type": "model",
+          "priority": 1,
+          "tags": ["llm", "fast"]
+        },
+        {
+          "name": "CodeLlama 34B (Q4 quantized)",
+          "size_gb": 20,
+          "type": "model",
+          "priority": 2,
+          "tags": ["code", "programming"]
+        },
+        {
+          "name": "Whisper Large V3 (speech to text)",
+          "size_gb": 3,
+          "type": "model",
+          "priority": 1,
+          "tags": ["audio", "transcription"]
+        },
+        {
+          "name": "Stable Diffusion XL (image gen)",
+          "size_gb": 7,
+          "type": "model",
+          "priority": 3,
+          "tags": ["image", "generation"]
+        }
+      ]
+    }
+  },
+  "storage_estimate": {
+    "wikipedia_full": "97 GB",
+    "wikipedia_nopic": "24 GB",
+    "stack_exchange": "90 GB",
+    "survival_collection": "~50 GB",
+    "cyber_tools_and_docs": "~100 GB",
+    "infrastructure_refs": "~30 GB",
+    "technical_books_and_code": "~200 GB",
+    "project_gutenberg": "~60 GB",
+    "maps_regional": "~100 GB",
+    "ai_models": "~80 GB",
+    "total_estimate": "~830 GB",
+    "drive_capacity": "8000 GB",
+    "remaining_for_growth": "~7170 GB"
+  }
+}
